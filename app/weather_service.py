@@ -9,6 +9,7 @@ Flow:
     get_weather(location)   ->  WeatherReport (current + 5-day forecast)
 """
 
+import logging
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any
@@ -17,6 +18,10 @@ import requests
 
 from app.config import Config
 from app.weather_codes import WeatherCondition, get_condition
+
+# A logger records technical details for the developer (in the terminal),
+# while users only see the friendly messages in our exceptions.
+logger = logging.getLogger(__name__)
 
 # The only two units Open-Meteo accepts for temperature_unit.
 VALID_UNITS = ("celsius", "fahrenheit")
@@ -108,6 +113,20 @@ class WeatherReport:
 # HTTP helper
 # ---------------------------------------------------------------------------
 
+def _error_reason(response: requests.Response | None) -> str:
+    """Extract why the API rejected a request, for logging.
+
+    Open-Meteo explains errors as JSON: {"error": true, "reason": "..."}.
+    Other servers (e.g. a proxy) may send HTML, so fall back to raw text.
+    """
+    if response is None:
+        return "no response"
+    try:
+        return str(response.json().get("reason", response.text[:200]))
+    except (ValueError, AttributeError):
+        return response.text[:200]
+
+
 def _get_json(url: str, params: dict[str, Any], timeout: float) -> dict[str, Any]:
     """Send a GET request and return the JSON body as a dict.
 
@@ -129,7 +148,11 @@ def _get_json(url: str, params: dict[str, Any], timeout: float) -> dict[str, Any
         raise WeatherAPIError("Could not connect to the weather service. "
                               "Check your internet connection.") from exc
     except requests.HTTPError as exc:
-        raise WeatherAPIError("The weather service returned an error.") from exc
+        status = exc.response.status_code if exc.response is not None else "?"
+        logger.warning("Open-Meteo returned HTTP %s: %s", status, _error_reason(exc.response))
+        raise WeatherAPIError(
+            f"The weather service returned an error (HTTP {status})."
+        ) from exc
     except ValueError as exc:  # response.json() failed: body isn't valid JSON
         raise WeatherAPIError("The weather service sent an invalid response.") from exc
 
