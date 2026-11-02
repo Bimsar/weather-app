@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card">
+    <h1>Check the weather</h1>
+
+    <form action="{{ url_for('main.search') }}" method="get" class="search-form" role="search">
+        {# The label is linked to the input via for/id, so screen readers announce it. #}
+        <label for="city">City name</label>
+        <div class="search-row">
+            <input type="text" id="city" name="city" placeholder="e.g. London"
+                   value="{{ city or '' }}" autocomplete="off">
+            <button type="submit">Search</button>
+        </div>
+    </form>
+
+    {% if error %}
+        {# role="alert" makes screen readers read the error out loud straight away. #}
+        <p class="error" role="alert">{{ error }}</p>
+    {% endif %}
+
+    {% if city %}
+        <p class="info">You searched for <strong>{{ city }}</strong>. Weather results are coming in Stage 6!</p>
+    {% endif %}
+</section>
+{% endblock %}

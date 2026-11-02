@@ -1,0 +1,43 @@
+/* Basic styles for now. Full styling and responsive design come in Stage 10. */
+
+/* CSS variables: change a colour once here and it updates everywhere. */
+:root {
+    --bg: #eef3f8;
+    --card-bg: #ffffff;
+    --text: #1f2933;
+    --primary: #1f6feb;
+    --error-bg: #fde8e8;
+    --error-text: #9b1c1c;
+    --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+.site-header, .site-footer { padding: 1rem; text-align: center; }
+.logo { font-size: 1.25rem; font-weight: bold; color: var(--text); text-decoration: none; }
+
+.container { max-width: 640px; margin: 0 auto; padding: 0 1rem; }
+
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.search-row { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+.search-row input { flex: 1; padding: 0.6rem; font-size: 1rem; border: 1px solid #9aa5b1; border-radius: 8px; }
+.search-row button {
+    padding: 0.6rem 1.2rem; font-size: 1rem; border: none; border-radius: 8px;
+    background: var(--primary); color: #fff; cursor: pointer;
+}
+
+.error { background: var(--error-bg); color: var(--error-text); padding: 0.75rem; border-radius: 8px; }
