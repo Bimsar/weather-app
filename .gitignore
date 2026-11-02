@@ -1,0 +1,27 @@
+# --- Virtual environments ---
+venv/
+.venv/
+env/
+
+# --- Python bytecode / build files ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# --- Secrets (never commit these!) ---
+.env
+
+# --- Testing & coverage output ---
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# --- Editors & OS junk ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
