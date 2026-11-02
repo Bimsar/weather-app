@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}{% if report %}Weather in {{ report.location.name }} · {% endif %}Weather App{% endblock %}
+
 {% block content %}
 <section class="card">
     <h1>Check the weather</h1>
@@ -18,9 +20,48 @@
         {# role="alert" makes screen readers read the error out loud straight away. #}
         <p class="error" role="alert">{{ error }}</p>
     {% endif %}
-
-    {% if city %}
-        <p class="info">You searched for <strong>{{ city }}</strong>. Weather results are coming in Stage 6!</p>
-    {% endif %}
 </section>
+
+{% if report %}
+    {% set now = report.current %}
+    {% set unit = report.temperature_unit %}
+    <section class="card weather-card" aria-labelledby="weather-heading">
+        <h2 id="weather-heading">{{ report.location.display_name }}</h2>
+
+        <div class="weather-main">
+            {# Emojis need role="img" + aria-label, or screen readers read odd names. #}
+            <span class="weather-emoji" role="img" aria-label="{{ now.condition.description }}">
+                {{- now.condition.emoji -}}
+            </span>
+            <div>
+                {# round|int turns 11.8 into 12 (no decimals on the big number) #}
+                <p class="temperature">{{ now.temperature|round|int }}{{ unit }}</p>
+                <p class="condition">{{ now.condition.description }}</p>
+            </div>
+        </div>
+
+        <dl class="weather-details">
+            <div>
+                <dt>Feels like</dt>
+                <dd>{{ now.feels_like|round|int }}{{ unit }}</dd>
+            </div>
+            <div>
+                <dt>Humidity</dt>
+                <dd>{{ now.humidity }}%</dd>
+            </div>
+            <div>
+                <dt>Wind</dt>
+                <dd>{{ now.wind_speed|round|int }} {{ report.wind_unit }}</dd>
+            </div>
+        </dl>
+
+        <p class="updated">
+            Last updated:
+            <time datetime="{{ now.time.isoformat() }}">
+                {{ now.time.strftime('%a %H:%M') }} {{ report.timezone_abbreviation }}
+            </time>
+            (local time)
+        </p>
+    </section>
+{% endif %}
 {% endblock %}
